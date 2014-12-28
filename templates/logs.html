@@ -1,0 +1,60 @@
+<html>
+<head>
+	<style>
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+#log_table {
+	border-spacing: 0px;
+	font-size: 10pt;
+}
+
+tr {
+    border: 1px solid black;
+}
+
+.commit_msg {
+	font-family: sans;
+}
+.commit_id {
+	font-family: monospace;
+	font-style: italic;
+	font-size: small;
+}
+#t_header {
+	background-color:  grey;
+	font-weight: bold;
+	color: white;
+
+}
+
+#log_branch_tr {
+	vertical-align:top;
+	width: 100px;
+}
+
+	</style>
+</head>
+<body>
+	<h1>Repository {{.Name}}</h1>
+	<p>Currently viewing branch <b><u>{{ .Branch }}</u></b><br>
+	<p><table id="log_table">
+		<tr><td rowspan="51" id="log_branch_tr">
+			BRANCHES<br>
+			{{ range .Branches }}
+			<a href="?branch={{ . }}">{{.}}</a><br>
+			{{ end }}
+			</td></tr>
+	{{ range .Logs }}
+	<tr>
+		<td><a href="{{ .Id }}"><span class="commit_id">{{ .Id }}</span> <span class="commit_msg">{{ .Message }}</span></a> by {{ .Author }} - {{ .Date }}</td>
+	</tr>
+	{{ end }}
+	</table>
+	</p>
+</body>
+</html>

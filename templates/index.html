@@ -1,0 +1,11 @@
+<html>
+<head></head>
+<body>
+	<h1>Repository Listing</h1>
+	<p>
+	{{ range $key, $value := . }}
+	<a href="{{ $key }}/">{{ $key }}</a>
+	{{ end }}
+	</p>
+</body>
+</html>

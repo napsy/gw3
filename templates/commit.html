@@ -1,0 +1,26 @@
+<html>
+<head>
+	<style>
+
+#code {
+	padding: 0px;
+	margin: 0px;
+	font-family: monospace;
+	background-color: #ebebeb;
+}
+#diff_rm {
+	color: red;
+}
+#diff_add {
+	color: green;
+}
+	</style>
+</head>
+<body>
+	<div id="code">
+		{{ range . }}
+		{{ . }} <br>
+		{{ end}}
+	</div>
+</body>
+</html>
