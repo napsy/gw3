@@ -1,3 +1,5 @@
+host = "localhost"
+port = "8084"
 [projects]
 	[projects.proj1]
 	home = "/home/luka/git/proj1"
