@@ -1,0 +1,6 @@
+[projects]
+	[projects.proj1]
+	home = "/home/luka/git/proj1"
+	[projects.proj2]
+	home = "/home/luka/git/proj2"
+

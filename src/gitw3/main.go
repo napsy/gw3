@@ -62,6 +62,16 @@ func (git GitRoot) Branches() ([]string, error) {
 	}
 	return msg, nil
 }
+
+func (git GitRoot) Pull(branch string) error {
+	msg, err := git.exec(git.root, "pull", branch)
+	if err != nil {
+		return fmt.Errorf("%v", msg)
+	}
+	return nil
+
+}
+
 func (git GitRoot) Checkout(branch string) error {
 	msg, err := git.exec(git.root, "checkout", branch)
 	if err != nil {
@@ -70,6 +80,7 @@ func (git GitRoot) Checkout(branch string) error {
 	return nil
 
 }
+
 func (git GitRoot) Log(n int) ([]LogEntry, error) {
 	nrLines := fmt.Sprintf("-n%d", n)
 	// short id, full date, author, message

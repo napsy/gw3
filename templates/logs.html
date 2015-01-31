@@ -45,9 +45,11 @@ tr {
 	<p><table id="log_table">
 		<tr><td rowspan="51" id="log_branch_tr">
 			BRANCHES<br>
+			<ul>
 			{{ range .Branches }}
-			<a href="?branch={{ . }}">{{.}}</a><br>
+			<li><a href="?branch={{ . }}">{{.}}</a><br>
 			{{ end }}
+			</ul>
 			</td></tr>
 	{{ range .Logs }}
 	<tr>
