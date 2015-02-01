@@ -13,8 +13,9 @@ import (
 )
 
 // GitLab PUSH structure
-type PushStruct struct {
-	Ref        string `json:",after"`
+type GitlabPush struct {
+	After      string `json:",after"`
+	Ref        string `json:",ref"`
 	Repository struct {
 		Name        string `json:",name"`
 		URL         string `json:",url"`
@@ -23,14 +24,11 @@ type PushStruct struct {
 	} `json:",repository"`
 }
 
-type Project struct {
-	Home string
-}
-
 type Config struct {
 	Host     string
 	Port     string
-	Projects map[string]Project
+	LogsDir  string
+	Projects Projects
 }
 
 var (
@@ -49,7 +47,7 @@ func LoadConfig() error {
 	return nil
 }
 func main() {
-	http.HandleFunc("/incoming", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/gitlab/incoming", func(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			log.Printf("Couldn't read body: %v", err)
@@ -57,24 +55,28 @@ func main() {
 		}
 		defer r.Body.Close()
 
-		push := PushStruct{}
+		push := GitlabPush{}
 		if err := json.Unmarshal(body, &push); err != nil {
 			log.Printf("Couldn't read body: %v", err)
 			return
 		}
-		project, ok := GlobalConfig.Projects[push.Repository.Name]
-		if !ok {
+		// TODO(napsy): generalize push structure
+		projectName := LoadedProjects.Get(push.Repository.Name)
+		if projectName == nil {
 			http.Error(w, ErrProject.Error(), 500)
 			return
 		}
 		branchName := push.Ref[strings.LastIndex(push.Ref, "/"):]
-		if err = Job(&project, branchName); err != nil {
-			http.Error(w, ErrProject.Error(), 500)
+		commitID := push.After
+		job := NewJob(projectName, map[string]string{"branch": branchName, "commit": commitID})
+		if IncomingJobs.Push(job) == false {
+			log.Printf("Job queue full, job request for %s:%s was not enqueued", projectName, commitID)
 		}
 	})
 	if err := LoadConfig(); err != nil {
-		log.Fatal("Unable to read configuraton: %v", err)
+		log.Fatalf("Unable to read configuraton: %v", err)
 	}
+	LoadedProjects = GlobalConfig.Projects
 	log.Printf("Listening on %s:%s\n", GlobalConfig.Host, GlobalConfig.Port)
 	log.Fatal(http.ListenAndServe(GlobalConfig.Host+":"+GlobalConfig.Port, nil))
 }
